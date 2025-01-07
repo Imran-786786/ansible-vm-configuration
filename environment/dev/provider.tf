@@ -4,6 +4,14 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "4.14.0"
     }
+   
+  }
+  backend "azurerm" {
+    resource_group_name   = "Umar-B16-G18-RG"
+    storage_account_name  = "umar16g18stg"
+    container_name        = "imran"
+    key                   = "dev.terraform.tfstate"
+    
   }
 }
 provider "azurerm" {

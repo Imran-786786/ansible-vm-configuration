@@ -97,7 +97,7 @@ stages:
         inputs:
           targetPath: '$(System.DefaultWorkingDirectory)/environment/dev'
           artifactName: 'terraform-output'
-          
+
   - stage: Ansible_Configuration
     displayName: "Configure Servers with Ansible"
     dependsOn: init_and_apply
@@ -109,10 +109,15 @@ stages:
             inputs:
               artifactName: terraform-output
               targetPath: '$(System.DefaultWorkingDirectory)/environment/dev'
+
           - script: |
-              terraform output -json vm-ip | jq '{all: {hosts: [. | to_entries[] | .value]}}' > $(System.DefaultWorkingDirectory)/environment/dev/inventory.json
-            displayName: "Generate Ansible Inventory"
+              # Ensure jq is available
+              jq --version
+
+              # Generate inventory.json using jq
+              terraform output -json vm-ip | jq '{all: {hosts: [.[] | .value]}}' > $(System.DefaultWorkingDirectory)/environment/dev/inventory.json
+            displayName: "Generate Inventory JSON"
+
           - script: |
               ansible-playbook -i $(System.DefaultWorkingDirectory)/environment/dev/inventory.json $(System.DefaultWorkingDirectory)/playbook/install-ngnix.yml
             displayName: "Run Ansible Playbook"
-
