@@ -3,37 +3,37 @@ trigger: none
 pool: mySytem
 
 stages:
-  # - stage: unit_and_scan_checks
-  #   displayName: 'Unit and Scan Checks'
-  #   jobs:
-  #     - job: unit_and_scan_checks
-  #       displayName: 'Unit and Scan Checks'
-  #       steps:
-  #       - task: tfsec@1
-  #         displayName: 'Run tfsec'
-  #         inputs:
-  #           version: 'v1.26.0'
-  #           dir: '$(System.DefaultWorkingDirectory)/'
-  #       - task: CmdLine@2
-  #         displayName: 'Run CheckOv'
-  #         condition: always()
-  #         inputs:
-  #           script: 'checkov -d . -o junitxml --output-file $(Common.TestResultsDirectory)/'
-  #           workingDirectory: '$(System.DefaultWorkingDirectory)/$(Common.TestResultsDirectory)/'
-  #       - task: CmdLine@2
-  #         displayName: 'Run Tflint'
-  #         condition: always()
-  #         inputs:
-  #           script: 'tflint --recursive --format=junit > $(Common.TestResultsDirectory)/tflint-results.xml'
-  #           workingDirectory: '$(System.DefaultWorkingDirectory)/'
-  #       - task: PublishTestResults@2
-  #         displayName: 'Publish Test Results'
-  #         condition: Always()
-  #         inputs:
-  #           testResultsFormat: 'JUnit'
-  #           testResultsFiles: '$(Common.TestResultsDirectory)/*.xml'
-  #           searchFolder: '$(System.DefaultWorkingDirectory)/'
-  #           testRunTitle: 'checkov test results'
+  - stage: unit_and_scan_checks
+    displayName: 'Unit and Scan Checks'
+    jobs:
+      - job: unit_and_scan_checks
+        displayName: 'Unit and Scan Checks'
+        steps:
+        - task: tfsec@1
+          displayName: 'Run tfsec'
+          inputs:
+            version: 'v1.26.0'
+            dir: '$(System.DefaultWorkingDirectory)/'
+        - task: CmdLine@2
+          displayName: 'Run CheckOv'
+          condition: always()
+          inputs:
+            script: 'checkov -d . -o junitxml --output-file $(Common.TestResultsDirectory)/'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/$(Common.TestResultsDirectory)/'
+        - task: CmdLine@2
+          displayName: 'Run Tflint'
+          condition: always()
+          inputs:
+            script: 'tflint --recursive --format=junit > $(Common.TestResultsDirectory)/tflint-results.xml'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/'
+        - task: PublishTestResults@2
+          displayName: 'Publish Test Results'
+          condition: Always()
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '$(Common.TestResultsDirectory)/*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)/'
+            testRunTitle: 'checkov test results'
   - stage: init_and_plan
     displayName: 'Init and Plan'
     jobs: 
@@ -46,18 +46,18 @@ stages:
           provider: 'azurerm'
           command: 'init'
           workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-          backendServiceArm: 'UmarAzureConnection'
-          backendAzureRmResourceGroupName: 'Umar-B16-G18-RG'
-          backendAzureRmStorageAccountName: 'umar16g18stg'
-          backendAzureRmContainerName: 'imran'
-          backendAzureRmKey: 'dev.terraform.tfstate'
+          backendServiceArm: ''
+          backendAzureRmResourceGroupName: ''
+          backendAzureRmStorageAccountName: ''
+          backendAzureRmContainerName: ''
+          backendAzureRmKey: '.terraform.tfstate'
       - task: TerraformTaskV4@4
         displayName: 'Plan Task'
         inputs:
           provider: 'azurerm'
           command: 'plan'
           workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-          environmentServiceNameAzureRM: 'UmarAzureConnection'
+          environmentServiceNameAzureRM: ''
 
   - stage: init_and_apply
     displayName: 'Init and apply'
@@ -79,18 +79,18 @@ stages:
           provider: 'azurerm'
           command: 'init'
           workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-          backendServiceArm: 'UmarAzureConnection'
-          backendAzureRmResourceGroupName: 'Umar-B16-G18-RG'
-          backendAzureRmStorageAccountName: 'umar16g18stg'
-          backendAzureRmContainerName: 'imran'
-          backendAzureRmKey: 'dev.terraform.tfstate'
+          backendServiceArm: ''
+          backendAzureRmResourceGroupName: ''
+          backendAzureRmStorageAccountName: ''
+          backendAzureRmContainerName: ''
+          backendAzureRmKey: 'terraform.tfstate'
       - task: TerraformTaskV4@4
         displayName: 'Apply Task'
         inputs:
           provider: 'azurerm'
           command: 'apply'
           workingDirectory: '$(System.DefaultWorkingDirectory)/environment/dev'
-          environmentServiceNameAzureRM: 'UmarAzureConnection'
+          environmentServiceNameAzureRM: ''
           commandOptions: '-auto-approve'
       - task: PublishPipelineArtifact@1
         displayName: 'Publish Terraform Output'
